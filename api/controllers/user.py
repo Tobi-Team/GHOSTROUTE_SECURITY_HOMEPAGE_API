@@ -1,6 +1,11 @@
 from fastapi import Depends, APIRouter
 from sqlalchemy.ext.asyncio import AsyncSession
-from api.schemas.user import CreateUserSchema, UserSchema
+from api.schemas.user import (
+    AccessTokenSchema,
+    CreateUserSchema,
+    LoginSchema,
+    UserSchema,
+)
 from api.schemas import ServiceResponse
 from config.db import get_db
 from api.dependencies import get_user_service
@@ -23,5 +28,20 @@ async def register(
         success=True,
         status_code=201,
         data=user.model_dump(exclude_none=True),
+    )
+    return response
+
+
+@routes.post("/login", response_model=ServiceResponse)
+@exception_before_advice
+async def login(
+    login_payload: LoginSchema, user_service: UserService = Depends(get_user_service)
+):
+    token: AccessTokenSchema = await user_service.login_user(login_payload)
+    response: ServiceResponse = ServiceResponse(
+        message="User logged in successfully",
+        success=True,
+        status_code=200,
+        data=token.model_dump(),
     )
     return response

@@ -4,6 +4,7 @@ from sqlalchemy.orm import (
     scoped_session,
     Session,
 )
+from sqlalchemy.ext.asyncio import AsyncSession
 from config.env_configs import configs
 from sqlalchemy.ext.declarative import declarative_base
 from typing import Iterator
@@ -43,7 +44,7 @@ Base.query = scoped_session(SessionLocal).query_property()
 
 
 def get_db() -> Iterator[Session]:
-    db: Session = SessionLocal()
+    db: AsyncSession = SessionLocal()
     try:
         yield db
     except Exception as e:

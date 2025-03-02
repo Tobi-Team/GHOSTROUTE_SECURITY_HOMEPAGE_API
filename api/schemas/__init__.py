@@ -42,3 +42,7 @@ class InternalServerException(ServiceException):
             self.traceback = traceback.format_exc()
         else:
             self.traceback = None
+
+
+class BaseSchema(BaseModel):
+    model_config = {"from_attributes": True}

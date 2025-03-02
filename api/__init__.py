@@ -26,7 +26,7 @@ def create_app():
     async def root():
         logger.info("Hello World")
         return ServiceResponse(
-            status=True,
+            success=True,
             message="Welcome to Ghost Route  Security Auth Service",
             data=None,
             status_code=200,

@@ -65,6 +65,26 @@ class UserService:
             expires_at=expires_in_minutes,
         )
 
+    async def verify_token(self, token: str) -> UserSchema:
+        try:
+            payload = jwt.decode(
+                token,
+                configs.SECRET_KEY,
+                configs.ALGORITHM,
+            )
+            user_email = payload.get("email")
+            user = await self.user_repo.get_user_by_email(user_email)
+            if not user:
+                raise ServiceException(status_code=404, message="User not found!")
+            user_schema = UserSchema.model_validate(user)
+            return user_schema
+        except ExpiredSignatureError:
+            raise ServiceException(status_code=401, message="Token has expired!")
+        except JWTClaimsError:
+            raise ServiceException(status_code=401, message="Invalid token claims!")
+        except JWTError:
+            raise ServiceException(status_code=401, message="Invalid token!")
+
     async def create_user(self, user: CreateUserSchema) -> UserSchema:
         model_instance = mapper(user, User)
         created_user: User = await self.user_repo.save(model_instance)

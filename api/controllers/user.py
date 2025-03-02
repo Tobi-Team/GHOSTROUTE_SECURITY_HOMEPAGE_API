@@ -11,6 +11,7 @@ from config.db import get_db
 from api.dependencies import get_user_service
 from api.services.user import UserService
 from api.middlewares.exceptions import exception_before_advice
+from fastapi import Request
 
 
 routes = APIRouter(prefix="/auth", tags=["auth"])
@@ -43,5 +44,22 @@ async def login(
         success=True,
         status_code=200,
         data=token.model_dump(),
+    )
+    return response
+
+
+@routes.get("/verify-token", response_model=ServiceResponse)
+@exception_before_advice
+async def verify_token(
+    request: Request, user_service: UserService = Depends(get_user_service)
+):
+    # extract the token from the request header
+    token: str = request.headers.get("Authorization").split(" ")[1]
+    user: UserSchema = await user_service.verify_token(token)
+    response: ServiceResponse = ServiceResponse(
+        message="Token verified successfully",
+        success=True,
+        status_code=200,
+        data=user.model_dump(exclude_none=True),
     )
     return response

@@ -18,9 +18,10 @@ async def register(
     user_service: UserService = Depends(get_user_service),
 ) -> ServiceResponse:
     user: UserSchema = await user_service.create_user(user_payload)
-    return ServiceResponse(
+    response: ServiceResponse = ServiceResponse(
         message="User created successfully",
         success=True,
         status_code=201,
         data=user.model_dump(exclude_none=True),
     ).model_dump(exclude_none=True)
+    return response

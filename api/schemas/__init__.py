@@ -10,14 +10,16 @@ logger = logging.getLogger(__name__)
 DEBUG = configs.DEBUG
 
 
-class ServiceResponse(BaseModel):
+class BaseSchema(BaseModel):
+    model_config = {"from_attributes": True}
+
+
+class ServiceResponse(BaseSchema):
     message: str
     success: bool
     status_code: int
     data: Optional[dict] = None
     traceback: Optional[str] = None
-
-    model_config = {"from_attributes": True}
 
 
 class ServiceException(Exception):
@@ -44,7 +46,3 @@ class InternalServerException(ServiceException):
             self.traceback = traceback.format_exc()
         else:
             self.traceback = None
-
-
-class BaseSchema(BaseModel):
-    model_config = {"from_attributes": True}

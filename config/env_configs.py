@@ -21,6 +21,9 @@ class AppConfigs(BaseSettings):
     MAIL_PASSWORD: str = ""
     MAIL_FROM: str = "default-email@example.com"
     DEBUG: bool = True if env == "dev" else False
+    REDIS_HOST: str = "localhost"
+    REDIS_PORT: int = 6379
+    REDIS_DB: int = 1
 
 
 configs = AppConfigs()

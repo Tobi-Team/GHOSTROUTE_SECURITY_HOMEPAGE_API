@@ -8,6 +8,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from config.env_configs import configs
 from sqlalchemy.ext.declarative import declarative_base
 from typing import Iterator
+from redis.asyncio import Redis
+
+
+REDIS_HOST = configs.REDIS_HOST
+REDIS_PORT = int(configs.REDIS_PORT)
+REDIS_DB = int(configs.REDIS_DB)
 
 environment = configs.ENV
 
@@ -52,3 +58,11 @@ def get_db() -> Iterator[Session]:
         raise e
     finally:
         db.close()
+
+
+async def get_redis() -> Redis:
+    """
+    Creates and returns a new redis connection.
+    """
+    redis = Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB, decode_responses=True)
+    return redis

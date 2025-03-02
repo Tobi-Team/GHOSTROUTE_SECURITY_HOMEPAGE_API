@@ -36,7 +36,7 @@ SessionLocal = sessionmaker(
 Base = (
     declarative_base()
     if environment == "test"
-    else declarative_base(bind=engine, schema=schema.Schema("public"))
+    else declarative_base(metadata=schema.MetaData(schema="public"))
 )
 
 Base.query = scoped_session(SessionLocal).query_property()

@@ -9,3 +9,11 @@ class CreateUserSchema(BaseSchema):
     email: str
     first_name: Optional[str]
     last_name: Optional[str]
+
+
+class UserSchema(BaseSchema):
+    id: int
+    username: str
+    email: str
+    first_name: Optional[str]
+    last_name: Optional[str]

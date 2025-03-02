@@ -12,7 +12,7 @@ class User(ModelBase):
     __table_args__ = {"extend_existing": True}
     first_name = Column(String(255), nullable=True)
     last_name = Column(String(255), nullable=True)
-    email = Column(String(255), nullable=False)
+    email = Column(String(255), nullable=False, unique=True)
     username = Column(String(255), nullable=False)
     password = Column(String(255), nullable=True)
     verified = Column(Boolean, nullable=True, default=False)

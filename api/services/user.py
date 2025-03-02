@@ -17,7 +17,9 @@ class UserService:
         user_repo: UserRepository = Depends(get_user_repo),
         redis_service: RedisService = Depends(get_redis_service),
     ):
+
         self.user_repo = user_repo
+        self.redis_service = redis_service
 
     async def create_user(self, user: CreateUserSchema) -> UserSchema:
         created_user: User = await self.user_repo.save(user)

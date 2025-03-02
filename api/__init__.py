@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from api.schemas import ServiceException, ServiceResponse
 from config import init_db
 from api.middlewares.exceptions import exception_handler, exception_before_advice
-
+from api.controllers import router
 
 logger_config = LoggerConfig()
 
@@ -32,6 +32,7 @@ def create_app():
             status_code=200,
         )
 
+    app.include_router(router)
     app.exception_handler(ServiceException)(exception_handler)
 
     init_db()

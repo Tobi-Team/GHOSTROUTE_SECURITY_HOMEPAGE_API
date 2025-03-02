@@ -1,8 +1,9 @@
 from sparky_utils.logger import LoggerConfig
 import logging
 from fastapi import FastAPI
-from api.schemas import ServiceResponse
+from api.schemas import ServiceException, ServiceResponse
 from config import init_db
+from api.middlewares.exceptions import exception_handler, exception_before_advice
 
 
 logger_config = LoggerConfig()
@@ -21,6 +22,7 @@ def create_app():
     )
 
     @app.get("/")
+    @exception_before_advice
     async def root():
         logger.info("Hello World")
         return ServiceResponse(
@@ -29,6 +31,8 @@ def create_app():
             data=None,
             status_code=200,
         )
+
+    app.exception_handler(ServiceException)(exception_handler)
 
     init_db()
     logger.info("Server is running......")

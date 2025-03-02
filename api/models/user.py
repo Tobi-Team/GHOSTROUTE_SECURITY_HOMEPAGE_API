@@ -10,6 +10,7 @@ from datetime import datetime
 class User(ModelBase):
     __tablename__ = "users"
     __table_args__ = {"extend_existing": True}
+    __mapper_args__ = {"polymorphic_identity": "users"}
     first_name = Column(String(255), nullable=True)
     last_name = Column(String(255), nullable=True)
     email = Column(String(255), nullable=False, unique=True)

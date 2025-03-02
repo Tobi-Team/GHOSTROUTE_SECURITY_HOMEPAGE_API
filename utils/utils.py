@@ -5,6 +5,11 @@ from fastapi import BackgroundTasks
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
 from config.env_configs import configs
 from pydantic import BaseModel, EmailStr
+from api.models.base import Base
+from typing import TypeVar
+
+
+T = TypeVar("T", bound=Base)  # type: ignore
 
 conf = ConnectionConfig(
     MAIL_USERNAME=configs.MAIL_USERNAME,
@@ -48,7 +53,7 @@ async def send_mail(mail_payload: EmailSchema) -> None:
         fm = FastMail(conf)
         background_tasks = BackgroundTasks()
         background_tasks.add_task(
-            fm.send_message, message, template_name="email_verification.html"
+            fm.send_message, message, template_name="registration_verification.html"
         )
         await background_tasks()
     except Exception:
@@ -67,3 +72,16 @@ def generate_otp(length: int = 6) -> str:
     characters = string.ascii_letters + string.digits
     otp = "".join(random.choice(characters) for _ in range(length))
     return otp.upper()
+
+
+def mapper(schema: T, model_obj: T) -> T:
+    """Maps a schema object to a model object.
+
+    Args:
+        schema (T): Schema object.
+        model_obj (T): Model object.
+
+    Returns:
+        T: Mapped model object.
+    """
+    return model_obj(**schema.dict())

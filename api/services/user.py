@@ -8,6 +8,7 @@ from utils.utils import generate_otp
 from api.schemas import ServiceResponse
 from api.tasks import send_verification_code
 from api.services import RedisService
+from utils.utils import mapper
 
 
 class UserService:
@@ -22,7 +23,8 @@ class UserService:
         self.redis_service = redis_service
 
     async def create_user(self, user: CreateUserSchema) -> UserSchema:
-        created_user: User = await self.user_repo.save(user)
+        model_instance = mapper(user, User)
+        created_user: User = await self.user_repo.save(model_instance)
 
         new_user: UserSchema = UserSchema.model_validate(created_user)
         username: str = new_user.username
@@ -30,5 +32,5 @@ class UserService:
         otp: str = generate_otp()
         # cache otp
         await self.redis_service.set(f"{email}_otp", otp)
-        send_verification_code.delay(email, otp, username)
+        send_verification_code.apply_async(args=[email, otp, username])
         return new_user

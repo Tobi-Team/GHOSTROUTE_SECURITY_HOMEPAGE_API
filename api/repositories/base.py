@@ -15,8 +15,8 @@ class BaseRepository(Generic[T]):
     async def save(self, obj_in: T) -> T:
         """Create a new record in the database."""
         self.session.add(obj_in)
-        await self.session.commit()
-        await self.session.refresh(obj_in)
+        self.session.commit()
+        self.session.refresh(obj_in)
         return obj_in
 
     async def get(self, obj_id: UUID) -> Optional[T]:

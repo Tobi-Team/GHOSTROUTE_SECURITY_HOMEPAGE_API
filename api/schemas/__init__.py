@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import Optional
 from config.env_configs import configs
 import traceback
@@ -16,6 +16,8 @@ class ServiceResponse(BaseModel):
     status_code: int
     data: Optional[dict] = None
     traceback: Optional[str] = None
+
+    model_config = {"from_attributes": True}
 
 
 class ServiceException(Exception):

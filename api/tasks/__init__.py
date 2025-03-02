@@ -1,8 +1,8 @@
-from celery import shared_task
+from api.celery import celery_app
 from utils.utils import EmailSchema, send_mail
 
 
-@shared_task
+@celery_app.task
 def send_verification_code(email: str, code: str, username: str):
     print(f"Sending verification code {code} to {email}")
     subject = "Verification Code"

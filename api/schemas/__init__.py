@@ -19,6 +19,12 @@ class ServiceResponse(BaseSchema):
     success: bool
     status_code: int
     data: Optional[dict] = None
+
+
+class ServiceErrorResponse(BaseSchema):
+    message: str
+    success: bool
+    status_code: int
     traceback: Optional[str] = None
 
 
@@ -34,7 +40,7 @@ class ServiceException(Exception):
     def _log_exception(self):
         logger.error(self.traceback)
         if DEBUG == True:
-            self.traceback = traceback.format_exc()
+            traceback.print_exc()
 
 
 class InternalServerException(ServiceException):

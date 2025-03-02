@@ -23,5 +23,5 @@ async def register(
         success=True,
         status_code=201,
         data=user.model_dump(exclude_none=True),
-    ).model_dump(exclude_none=True)
+    )
     return response

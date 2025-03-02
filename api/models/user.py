@@ -14,7 +14,7 @@ class User(ModelBase):
     first_name = Column(String(255), nullable=True)
     last_name = Column(String(255), nullable=True)
     email = Column(String(255), nullable=False, unique=True)
-    username = Column(String(255), nullable=False)
+    username = Column(String(255), nullable=False, unique=True)
     password = Column(String(255), nullable=True)
     verified = Column(Boolean, nullable=True, default=False)
     is_active = Column(Boolean, nullable=False, default=True)

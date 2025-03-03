@@ -13,7 +13,7 @@ class User(ModelBase):
     __mapper_args__ = {"polymorphic_identity": "users"}
     first_name = Column(String(255), nullable=True)
     last_name = Column(String(255), nullable=True)
-    email = Column(String(255), nullable=False, unique=True)
+    email = Column(String(255), nullable=False, unique=True, index=True)
     username = Column(String(255), nullable=False, unique=True)
     password = Column(String(255), nullable=True)
     verified = Column(Boolean, nullable=True, default=False)

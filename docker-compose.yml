@@ -1,0 +1,13 @@
+services:
+  mega_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mega_app
+
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+
+    command: sh -c "uvicorn app:app --reload --port=5000"

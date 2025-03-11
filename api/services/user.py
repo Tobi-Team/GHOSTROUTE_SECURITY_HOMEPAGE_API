@@ -129,7 +129,7 @@ class UserService:
         if not user:
             raise ServiceException(status_code=404, message="User not found!")
         # update user status
-        user.is_verified = True
+        user.verified = True
         _ = await self.user_repo.save(user)
         # delete otp from redis
         _ = await self.redis_service.delete(f"{email}_otp")

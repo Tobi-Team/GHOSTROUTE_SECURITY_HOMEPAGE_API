@@ -38,3 +38,10 @@ class ResendOTPSchema(BaseSchema):
 class VerifyOTPSchema(BaseSchema):
     email: str
     otp: str
+
+
+class ResetPasswordSchema(BaseSchema):
+    email: str
+    otp: str
+    password: constr(min_length=8, max_length=16)
+    confirm_password: constr(min_length=8, max_length=16)

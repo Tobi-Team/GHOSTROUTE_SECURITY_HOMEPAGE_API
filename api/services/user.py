@@ -6,6 +6,7 @@ from api.schemas.user import (
     UserSchema,
     ResendOTPSchema,
     VerifyOTPSchema,
+    ResetPasswordSchema,
 )
 from api.repositories.users import UserRepository
 from api.dependencies import get_user_repo, get_redis_service
@@ -111,7 +112,7 @@ class UserService:
         # cache otp
         await self.redis_service.set(f"{user_email}_otp", otp)
         send_verification_code.apply_async(args=[user_email, otp, username])
-        message: str = "OTP Resent Successfully"
+        message: str = "OTP Sent Successfully"
         return message
 
     async def verify_otp(self, verify_otp_schema: VerifyOTPSchema):
@@ -146,3 +147,31 @@ class UserService:
         # generate access token for the user
         token_response: AccessTokenSchema = await self._generate_token(dumped_user)
         return token_response
+
+    async def reset_password(self, reset_password_schema: ResetPasswordSchema) -> str:
+
+        # get user by email
+        user: User = await self.user_repo.get_user_by_email(reset_password_schema.email)
+        if not user:
+            raise ServiceException(status_code=404, message="User not found!")
+        password: str = reset_password_schema.password
+        confirm_password: str = reset_password_schema.confirm_password
+        if password != confirm_password:
+            raise ServiceException(status_code=400, message="Passwords do not match!")
+        # get otp from redis
+        otp = reset_password_schema.otp
+        # check otp is correct
+        cached_otp: str = await self.redis_service.get(f"{user.email}_otp")
+        if not cached_otp:
+            raise ServiceException(status_code=400, message="OTP has expired!")
+        if cached_otp.upper() != otp.upper():
+            raise ServiceException(status_code=400, message="Invalid OTP!")
+        # delete the otp from redis
+        _ = await self.redis_service.delete(f"{user.email}_otp")
+        # update password
+        # encrpt password before update
+        password = user.hash_password(password)
+        user.password = password
+        _ = await self.user_repo.save(user)
+        message: str = "Password reset successfully!"
+        return message

@@ -7,6 +7,7 @@ from api.schemas.user import (
     UserSchema,
     ResendOTPSchema,
     VerifyOTPSchema,
+    ResetPasswordSchema,
 )
 from api.schemas import ServiceResponse
 from config.db import get_db
@@ -84,6 +85,36 @@ async def verify_otp(
             success=False,
             status_code=400,
         )
+    return response
+
+
+@routes.post("/forgot-password", response_model=ServiceResponse)
+@exception_before_advice
+async def forgot_password(
+    resend_otp_payload: ResendOTPSchema,
+    user_service: UserService = Depends(get_user_service),
+):
+    message: str = await user_service.resend_otp(resend_otp_payload)
+    response: ServiceResponse = ServiceResponse(
+        message=message,
+        success=True,
+        status_code=200,
+    )
+    return response
+
+
+@routes.post("/reset-password", response_model=ServiceResponse)
+@exception_before_advice
+async def reset_password(
+    reset_password_payload: ResetPasswordSchema,
+    user_service: UserService = Depends(get_user_service),
+):
+    message: str = await user_service.reset_password(reset_password_payload)
+    response: ServiceResponse = ServiceResponse(
+        message=message,
+        success=True,
+        status_code=200,
+    )
     return response
 
 

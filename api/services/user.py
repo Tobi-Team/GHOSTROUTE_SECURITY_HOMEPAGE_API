@@ -4,6 +4,8 @@ from api.schemas.user import (
     CreateUserSchema,
     LoginSchema,
     UserSchema,
+    ResendOTPSchema,
+    VerifyOTPSchema,
 )
 from api.repositories.users import UserRepository
 from api.dependencies import get_user_repo, get_redis_service
@@ -97,6 +99,28 @@ class UserService:
         await self.redis_service.set(f"{email}_otp", otp)
         send_verification_code.apply_async(args=[email, otp, username])
         return new_user
+
+    async def resend_otp(self, resend_otp_schema: ResendOTPSchema) -> str:
+        otp: str = generate_otp()
+        user_email: str = resend_otp_schema.email
+        # cache otp
+        await self.redis_service.set(f"{user_email}_otp", otp)
+        send_verification_code.apply_async(args=[user_email, otp])
+        message: str = "OTP Resent Successfully"
+        return message
+
+    async def verify_otp(self, verify_otp_schema: VerifyOTPSchema):
+        # get otp from redis
+        otp = verify_otp_schema.otp
+        email = verify_otp_schema.email
+        cached_otp: str = await self.redis_service.get(f"{email}_otp")
+        if not cached_otp:
+            raise ServiceException(status_code=400, message="OTP has expired!")
+        if cached_otp != otp:
+            raise ServiceException(status_code=400, message="Invalid OTP!")
+        # delete otp from redis
+        _ = await self.redis_service.set(f"{email}_otp", "")
+        return True
 
     async def login_user(self, user: LoginSchema) -> AccessTokenSchema:
         user_obj: User = await self.user_repo.get_user_by_email(user.email)

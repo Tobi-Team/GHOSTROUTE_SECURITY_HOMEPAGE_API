@@ -5,6 +5,8 @@ from api.schemas.user import (
     CreateUserSchema,
     LoginSchema,
     UserSchema,
+    ResendOTPSchema,
+    VerifyOTPSchema,
 )
 from api.schemas import ServiceResponse
 from config.db import get_db
@@ -45,6 +47,43 @@ async def login(
         status_code=200,
         data=token.model_dump(),
     )
+    return response
+
+
+@routes.post("/resend-otp", response_model=ServiceResponse)
+@exception_before_advice
+async def resend_otp(
+    resend_otp_payload: ResendOTPSchema,
+    user_service: UserService = Depends(get_user_service),
+):
+    message: str = await user_service.resend_otp(resend_otp_payload)
+    response: ServiceResponse = ServiceResponse(
+        message=message,
+        success=True,
+        status_code=200,
+    )
+    return response
+
+
+@routes.post("/verify-otp", response_model=ServiceResponse)
+@exception_before_advice
+async def verify_otp(
+    verify_otp_payload: VerifyOTPSchema,
+    user_service: UserService = Depends(get_user_service),
+):
+    verified = await user_service.verify_otp(verify_otp_payload)
+    if verified:
+        response: ServiceResponse = ServiceResponse(
+            message="OTP verified successfully",
+            success=True,
+            status_code=200,
+        )
+    else:
+        response: ServiceResponse = ServiceResponse(
+            message="OTP verification failed",
+            success=False,
+            status_code=400,
+        )
     return response
 
 

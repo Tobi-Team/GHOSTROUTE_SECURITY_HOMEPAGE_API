@@ -29,3 +29,12 @@ class AccessTokenSchema(BaseModel):
     access_token: str
     token_type: Optional[str] = "bearer"
     expires_at: int
+
+
+class ResendOTPSchema(BaseSchema):
+    email: str
+
+
+class VerifyOTPSchema(BaseSchema):
+    email: str
+    otp: str

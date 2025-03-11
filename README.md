@@ -2,7 +2,7 @@
 RESTFUL API containing Ghostroute's Homepage API and Services
 
 ## Getting started with the project
-- Disclaimer this project is following Single Responsibility Principle (SRP) Pattern, each folder in the api folder has the single responsibility, e.g controllers folder handles the presentation layer. Also this projects extensively utilizes dependency injection as a strategy for building loosely coupled, testable and scalable system. Hence, you need to atleat comfortable this programming paradigm to get the best out of this project repo.
+- Disclaimer this project follows Single Responsibility Principle (SRP) Pattern, each folder in the api folder has the single responsibility, e.g controllers folder handles the presentation layer. Also this projects extensively utilizes dependency injection as a strategy for building loosely coupled, testable and scalable system. Hence, you need to atleast be comfortable with this programming paradigm to get the best out of this project repo.
 
 ## Set up
 - clone the project

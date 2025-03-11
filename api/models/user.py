@@ -37,6 +37,24 @@ class User(ModelBase):
 
         return bcrypt.checkpw(password.encode("utf-8"), self.password.encode("utf-8"))
 
+    def hash_password(self, password):
+        """
+        Hash the provided password using bcrypt
+
+        Args:
+            password (str): The password to hash
+
+        Returns:
+            str: The hashed password
+        """
+        if not password:
+            return None
+
+        # Generate a salt and hash the password
+        salt = bcrypt.gensalt()
+        hashed_password = bcrypt.hashpw(password.encode("utf-8"), salt)
+        return hashed_password.decode("utf-8")
+
 
 @event.listens_for(User, "before_insert")
 def hash_password_before_insert(mapper, connection, target):

@@ -18,3 +18,7 @@ class RedisService:
     async def get(self, key: str):
         await self._init_redis()
         return await self.redis.get(key)
+
+    async def delete(self, key: str):
+        await self._init_redis()
+        await self.redis.delete(key)

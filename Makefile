@@ -20,3 +20,6 @@ migrate:
 
 reverse-migrate:
 	@alembic downgrade -1
+
+celery:
+	@celery -A api.celery worker --loglevel=info

@@ -103,9 +103,14 @@ class UserService:
     async def resend_otp(self, resend_otp_schema: ResendOTPSchema) -> str:
         otp: str = generate_otp()
         user_email: str = resend_otp_schema.email
+        # get user by email
+        user: User = await self.user_repo.get_user_by_email(user_email)
+        if not user:
+            raise ServiceException(status_code=404, message="User not found!")
+        username: str = user.username
         # cache otp
         await self.redis_service.set(f"{user_email}_otp", otp)
-        send_verification_code.apply_async(args=[user_email, otp])
+        send_verification_code.apply_async(args=[user_email, otp, username])
         message: str = "OTP Resent Successfully"
         return message
 
@@ -116,10 +121,17 @@ class UserService:
         cached_otp: str = await self.redis_service.get(f"{email}_otp")
         if not cached_otp:
             raise ServiceException(status_code=400, message="OTP has expired!")
-        if cached_otp != otp:
+        if cached_otp.upper() != otp.upper():
             raise ServiceException(status_code=400, message="Invalid OTP!")
+        # get user by email
+        user: User = await self.user_repo.get_user_by_email(email)
+        if not user:
+            raise ServiceException(status_code=404, message="User not found!")
+        # update user status
+        user.is_verified = True
+        _ = await self.user_repo.save(user)
         # delete otp from redis
-        _ = await self.redis_service.set(f"{email}_otp", "")
+        _ = await self.redis_service.delete(f"{email}_otp")
         return True
 
     async def login_user(self, user: LoginSchema) -> AccessTokenSchema:

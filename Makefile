@@ -1,7 +1,7 @@
 .PHONY: run mss-auto mms 
 
 run-dev:
-	@uvicorn app:app --reload --port=5000
+	@uvicorn app:app --reload --port=5500
 
 test:
 	@pytest
